@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+    <title>Marco likes men</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+</head>
+<body>
+
+<div id="board"></div>
+
+<script type="text/babel">
+function tick() {
+  const t = new Date().toLocaleTimeString();
+  const srcBoard = "board#" + t;
+  const element = (
+    <div>
+      <h1>Chessboard Spectator page</h1>
+      <img src={srcBoard} height="300" width="300"/>
+    </div>
+  );
+  ReactDOM.render(element, document.getElementById('board'));
+}
+
+setInterval(tick, 1000);
+
+</script>
+</body>
+</html>
