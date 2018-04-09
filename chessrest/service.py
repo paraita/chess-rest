@@ -1,4 +1,4 @@
-from flask_restplus import Api, Resource
+from flask_restplus import Api, Resource, fields
 from flask import render_template
 from flask import Response
 import chess
@@ -10,8 +10,11 @@ ns = api.namespace('rest', description='Chessboard Rest interface')
 viz = api.namespace('viz', description='Chessboard Representation')
 board = chess.Board()
 
+move = api.model('Move', {
+    'move': fields.String(required=True, description='A move in SAN format')
+})
 
-@ns.route('/')
+@ns.route('')
 class ChessRest(Resource):
     '''REST Interface of the Chessboard'''
 
@@ -23,15 +26,19 @@ class ChessRest(Resource):
         '''Returns the board state in FEN format'''
         return board.fen()
 
-    @ns.expect(parser)
+    @ns.expect(move)
     def post(self):
         '''Make a move on the board'''
-        args = self.parser.parse_args()
-        if 'move' in args:
-            board.push_san(args['move'])
+        payload = api.payload
+        print(f"payload: {payload}")
+        try:
+            san_move = payload['move']
+            print(f"san_move: {san_move}")
+            board.push_san(san_move)
             return Response('Move registered !', 200)
-        else:
-            return Response('UH OH You forgot the move parameter', 405)
+        except ValueError as err:
+            print(err)
+            return Response('Invalid move: {}'.format(move), 405)
 
 
 @ns.route('/reset')
