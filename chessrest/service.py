@@ -11,7 +11,7 @@ viz = api.namespace('viz', description='Chessboard Representation')
 board = chess.Board()
 
 move = api.model('Move', {
-    'move': fields.String(required=True, description='A move in SAN format')
+    'move': fields.String(required=True, description='A move in UCI format')
 })
 
 @ns.route('')
@@ -24,17 +24,16 @@ class ChessRest(Resource):
     @ns.doc('Returns the board state')
     def get(self):
         '''Returns the board state in FEN format'''
-        return board.fen()
+        response = Response(board.fen(), mimetype='text/plain')
+        return response
 
     @ns.expect(move)
     def post(self):
         '''Make a move on the board'''
         payload = api.payload
-        print(f"payload: {payload}")
         try:
-            san_move = payload['move']
-            print(f"san_move: {san_move}")
-            board.push_san(san_move)
+            uci_move = payload['move']
+            board.push_uci(uci_move)
             return Response('Move registered !', 200)
         except ValueError as err:
             print(err)
